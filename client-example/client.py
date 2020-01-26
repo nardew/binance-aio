@@ -35,7 +35,7 @@ async def run():
 	# to generate a certificate use 'openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out certificate.pem'
 	certificate_path = pathlib.Path(__file__).with_name("certificate.pem")
 
-	# to retrieve your API/SEC key go to your binance website, create the keys and store them in API_KEY/SEC_KEY
+	# to retrieve your API/SEC key go to your binance website, create the keys and store them in APIKEY/SECKEY
 	# environment variables
 	api_key = os.environ['APIKEY']
 	sec_key = os.environ['SECKEY']

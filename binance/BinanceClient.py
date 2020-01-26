@@ -68,16 +68,20 @@ class BinanceClient(object):
 			"symbol": str(pair),
 			"side": side.value,
 			"type": "LIMIT",
-			"timeInForce": time_in_force.value,
 			"quantity": quantity,
 			"quoteOrderQty": quote_order_quantity,
 			"price": price,
 			"newClientOrderId": new_client_order_id,
 			"icebergQty": iceberg_quantity,
-			"newOrderRespType": new_order_response_type.value,
 			"recvWindow": recv_window_ms,
 			"timestamp": self._get_current_timestamp_ms()
 		})
+
+		if time_in_force:
+			params['timeInForce'] = time_in_force.value
+
+		if new_order_response_type:
+			params['newOrderRespType'] = new_order_response_type.value
 
 		return await self._create_post("order", params = params, headers = self._get_header_api_key(), signed = True)
 
