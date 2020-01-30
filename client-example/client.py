@@ -8,6 +8,7 @@ from binance.BinanceClient import BinanceClient
 from binance.Pair import Pair
 from binance.subscriptions import BestOrderBookTickerSubscription, TradeSubscription, AccountSubscription
 from binance.enums import OrderSide, TimeInForce, OrderResponseType
+from binance.BinanceException import BinanceException
 
 LOG = logging.getLogger("binance")
 LOG.setLevel(logging.DEBUG)
@@ -35,7 +36,7 @@ async def run():
 	# to generate a certificate use 'openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out certificate.pem'
 	certificate_path = pathlib.Path(__file__).with_name("certificate.pem")
 
-	# to retrieve your API/SEC key go to your binance website, create the keys and store them in API_KEY/SEC_KEY
+	# to retrieve your API/SEC key go to your binance website, create the keys and store them in APIKEY/SECKEY
 	# environment variables
 	api_key = os.environ['APIKEY']
 	sec_key = os.environ['SECKEY']
@@ -61,11 +62,17 @@ async def run():
 	await client.get_account(recv_window_ms = 5000)
 
 	print("\nCreate limit order:")
-	await client.create_limit_order(Pair("ETH", "BTC"), OrderSide.BUY, "1", "0", time_in_force = TimeInForce.GOOD_TILL_CANCELLED,
-	                                new_order_response_type = OrderResponseType.FULL)
+	try:
+		await client.create_limit_order(Pair("ETH", "BTC"), OrderSide.BUY, "1", "0", time_in_force = TimeInForce.GOOD_TILL_CANCELLED,
+	                                    new_order_response_type = OrderResponseType.FULL)
+	except BinanceException as e:
+		print(e)
 
 	print("\nDelete order:")
-	await client.delete_order(pair = Pair('ETH', 'BTC'), order_id = "1")
+	try:
+		await client.delete_order(pair = Pair('ETH', 'BTC'), order_id = "1")
+	except BinanceException as e:
+		print(e)
 
 	# Websockets
 	print("\nWEBSOCKETS\n")

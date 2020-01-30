@@ -49,7 +49,7 @@ class SubscriptionMgr(object):
 				LOG.debug(f"Initiating websocket connection.")
 				uri = SubscriptionMgr.WEB_SOCKET_URI + self._create_stream_uri()
 				LOG.debug(f"Websocket uri: {uri}")
-				async with websockets.connect(uri, ssl = self.ssl_context) as websocket:
+				async with websockets.connect(uri, ssl = self.ssl_context, ping_interval = None) as websocket:
 					subscription_message = self._create_subscription_message()
 					LOG.debug(f"> {subscription_message}")
 					await websocket.send(json.dumps(subscription_message))

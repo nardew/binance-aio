@@ -9,7 +9,7 @@
 For changes see [CHANGELOG](https://github.com/nardew/binance-aio/blob/master/CHANGELOG.md).
 
 ### Features
-- access to limited binance's REST API (account details, market data, order management, ...) and websockets (account feed, market data feed, orderbook feed, ...). Missing REST calls and websocket streams will be added based on our availability.
+- access to limited binance's REST API (account details, market data, order management, ...) and websockets (account feed, market data feed, orderbook feed, ...). Missing REST calls and websocket streams will be added on request and based on our availability.
 - channels bundled in one or multiple websockets processed in parallel 
 - lean architecture setting ground for the future extensions and customizations
 - fully asynchronous design aiming for the best performance
@@ -69,7 +69,7 @@ async def run():
 	# to generate a certificate use 'openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out certificate.pem'
 	certificate_path = pathlib.Path(__file__).with_name("certificate.pem")
 
-	# to retrieve your API/SEC key go to your binance website, create the keys and store them in API_KEY/SEC_KEY
+	# to retrieve your API/SEC key go to your binance website, create the keys and store them in APIKEY/SECKEY
 	# environment variables
 	api_key = os.environ['APIKEY']
 	sec_key = os.environ['SECKEY']
@@ -194,4 +194,7 @@ If you like the library and you feel like you want to support its further develo
 
 ### Contact
 
-If you feel you want to get in touch, then please use GitHub Issues.
+If you feel you want to get in touch, then please
+
+- preferably use Github Issues, or
+- send an e-mail to <img src="http://safemail.justlikeed.net/e/160b5d5ea6878dd3d893b9f9fecb6ed7.png" border="0" align="absbottom">
