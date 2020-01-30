@@ -194,4 +194,7 @@ If you like the library and you feel like you want to support its further develo
 
 ### Contact
 
-If you feel you want to get in touch, then please use GitHub Issues.
+If you feel you want to get in touch, then please
+
+- preferably use Github Issues, or
+- send an e-mail to <img src="http://safemail.justlikeed.net/e/160b5d5ea6878dd3d893b9f9fecb6ed7.png" border="0" align="absbottom">

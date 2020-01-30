@@ -12,6 +12,7 @@ from binance.Pair import Pair
 from binance.subscriptions import Subscription, SubscriptionMgr
 from binance import enums
 from binance.Timer import Timer
+from binance.BinanceException import BinanceException
 
 LOG = logging.getLogger(__name__)
 
@@ -158,6 +159,9 @@ class BinanceClient(object):
 				response_body = await response.text()
 
 				LOG.debug(f"<: status [{status_code}], response [{response_body}]")
+
+				if str(status_code)[0] != '2':
+					raise BinanceException(f"<: status [{status_code}], response [{response_body}]")
 
 				if len(response_body) > 0:
 					response_body = json.loads(response_body)

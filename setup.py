@@ -7,7 +7,7 @@ setuptools.setup(
 	name="binance-aio",
 	version="0.0.1",
 	author="nardew",
-	author_email="bitpanda.aio@gmail.com",
+	author_email="binance.aio@gmail.com",
 	description="Binance asynchronous python client",
 	long_description=long_description,
 	long_description_content_type="text/markdown",
