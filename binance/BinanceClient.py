@@ -41,6 +41,78 @@ class BinanceClient(object):
 	async def get_time(self) -> dict:
 		return await self._create_get("time")
 
+	async def get_orderbook(self, pair : Pair, limit : enums.DepthLimit = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": pair,
+		})
+
+		if limit:
+			params['limit'] = limit.value
+
+		return await self._create_get("depth", params = params)
+
+	async def get_trades(self, pair : Pair, limit : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": pair,
+			"limit": limit
+		})
+
+		return await self._create_get("trades", params = params)
+
+	async def get_historical_trades(self, pair : Pair, limit : int = None, from_id : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": pair,
+			"limit": limit,
+			"fromId": from_id
+		})
+
+		return await self._create_get("historicalTrades", params = params)
+
+	async def get_aggregate_trades(self, pair : Pair, limit : int = None, from_id : int = None, start_tmstmp_ms : int = None, end_tmstmp_ms : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": pair,
+			"limit": limit,
+			"fromId": from_id,
+			"startTime": start_tmstmp_ms,
+			"endTime": end_tmstmp_ms
+		})
+
+		return await self._create_get("aggTrades", params = params)
+
+	async def get_candelsticks(self, pair : Pair, limit : int = None, interval : enums.CandelstickInterval = None, start_tmstmp_ms : int = None, end_tmstmp_ms : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": pair,
+			"limit": limit,
+			"startTime": start_tmstmp_ms,
+			"endTime": end_tmstmp_ms
+		})
+
+		if interval:
+			params['interval'] = interval.value
+
+		return await self._create_get("klines", params = params)
+
+	async def get_average_price(self, pair : Pair) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": pair
+		})
+
+		return await self._create_get("avgPrice", params = params)
+
+	async def get_24h_price_ticker(self, pair : Pair = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": pair,
+		})
+
+		return await self._create_get("ticker/24hr", params = params)
+
+	async def get_price_ticker(self, pair : Pair = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": pair,
+		})
+
+		return await self._create_get("ticker/price", params = params)
+
 	async def get_best_orderbook_ticker(self, pair : Optional[Pair] = None) -> dict:
 		params = BinanceClient._clean_request_params({
 			"symbol": pair,
@@ -56,9 +128,10 @@ class BinanceClient(object):
 
 		return await self._create_get("account", headers = self._get_header_api_key(), params = params, signed = True)
 
-	async def create_limit_order(self, pair : Pair, side : enums.OrderSide,
+	async def create_order(self, pair : Pair, side : enums.OrderSide, type : enums.OrderType,
 	                             quantity : str,
-	                             price : str,
+	                             price : str = None,
+								 stop_price: str = None,
 	                             quote_order_quantity: str = None,
 	                             time_in_force: enums.TimeInForce = None,
 	                             new_client_order_id : str = None,
@@ -68,10 +141,11 @@ class BinanceClient(object):
 		params = BinanceClient._clean_request_params({
 			"symbol": str(pair),
 			"side": side.value,
-			"type": "LIMIT",
+			"type": type.value,
 			"quantity": quantity,
 			"quoteOrderQty": quote_order_quantity,
 			"price": price,
+			"stopPrice": stop_price,
 			"newClientOrderId": new_client_order_id,
 			"icebergQty": iceberg_quantity,
 			"recvWindow": recv_window_ms,
@@ -86,6 +160,49 @@ class BinanceClient(object):
 
 		return await self._create_post("order", params = params, headers = self._get_header_api_key(), signed = True)
 
+	async def create_test_order(self, pair : Pair, side : enums.OrderSide, type : enums.OrderType,
+	                             quantity : str,
+	                             price : str = None,
+								 stop_price: str = None,
+	                             quote_order_quantity: str = None,
+	                             time_in_force: enums.TimeInForce = None,
+	                             new_client_order_id : str = None,
+	                             iceberg_quantity : str = None,
+	                             new_order_response_type : enums.OrderResponseType = None,
+	                             recv_window_ms : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": str(pair),
+			"side": side.value,
+			"type": type.value,
+			"quantity": quantity,
+			"quoteOrderQty": quote_order_quantity,
+			"price": price,
+			"stopPrice": stop_price,
+			"newClientOrderId": new_client_order_id,
+			"icebergQty": iceberg_quantity,
+			"recvWindow": recv_window_ms,
+			"timestamp": self._get_current_timestamp_ms()
+		})
+
+		if time_in_force:
+			params['timeInForce'] = time_in_force.value
+
+		if new_order_response_type:
+			params['newOrderRespType'] = new_order_response_type.value
+
+		return await self._create_post("order/test", params = params, headers = self._get_header_api_key(), signed = True)
+
+	async def get_query_order(self, pair : Pair, order_id : int = None, orig_client_order_id : int = None, recv_window_ms : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": str(pair),
+			"orderId": order_id,
+			"origClientOrderId": orig_client_order_id,
+			"recvWindow": recv_window_ms,
+			"timestamp": self._get_current_timestamp_ms()
+		})
+
+		return await self._create_get("order", params = params, headers = self._get_header_api_key(), signed = True)
+
 	async def delete_order(self, pair : Pair, order_id : str = None, orig_client_order_id : str = None,
 	                       new_client_order_id : str = None, recv_window_ms : int = None) -> dict:
 		params = BinanceClient._clean_request_params({
@@ -98,6 +215,28 @@ class BinanceClient(object):
 		})
 
 		return await self._create_delete("order", params = params, headers = self._get_header_api_key(), signed = True)
+
+	async def get_open_orders(self, pair : Pair = None, recv_window_ms : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": str(pair),
+			"recvWindow": recv_window_ms,
+			"timestamp": self._get_current_timestamp_ms()
+		})
+
+		return await self._create_get("openOrders", params = params, headers = self._get_header_api_key(), signed = True)
+
+	async def get_all_orders(self, pair : Pair, order_id : int = None, limit : int = None, start_tmstmp_ms : int = None, end_tmstmp_ms : int = None, recv_window_ms : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": str(pair),
+			"orderId": order_id,
+			"startTime": start_tmstmp_ms,
+			"endTime": end_tmstmp_ms,
+			"limit": limit,
+			"recvWindow": recv_window_ms,
+			"timestamp": self._get_current_timestamp_ms()
+		})
+
+		return await self._create_get("order", params = params, headers = self._get_header_api_key(), signed = True)
 
 	async def get_listen_key(self):
 		return await self._create_post("userDataStream", headers = self._get_header_api_key())

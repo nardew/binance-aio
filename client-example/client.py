@@ -7,7 +7,7 @@ from datetime import datetime
 from binance.BinanceClient import BinanceClient
 from binance.Pair import Pair
 from binance.subscriptions import BestOrderBookTickerSubscription, TradeSubscription, AccountSubscription
-from binance.enums import OrderSide, TimeInForce, OrderResponseType
+from binance import enums
 from binance.BinanceException import BinanceException
 
 LOG = logging.getLogger("binance")
@@ -55,6 +55,21 @@ async def run():
 	print("\nExchange info:")
 	await client.get_exchange_info()
 
+	print("\nOrder book:")
+	await client.get_orderbook(pair = Pair('ETH', 'BTC'), limit = enums.DepthLimit.LIMIT_5)
+
+	print("\nTrades:")
+	await client.get_trades(pair=Pair('ETH', 'BTC'), limit = 10)
+
+	print("\nHistorical trades:")
+	await client.get_historical_trades(pair=Pair('ETH', 'BTC'), limit = 10)
+
+	print("\nAggregate trades:")
+	await client.get_aggregate_trades(pair=Pair('ETH', 'BTC'), limit = 10)
+
+	print("\nCandelsticks:")
+	await client.get_candelsticks(pair=Pair('ETH', 'BTC'), interval = enums.CandelstickInterval.I_1D, limit=10)
+
 	print("\nBest order book ticker:")
 	await client.get_best_orderbook_ticker(pair = Pair('ETH', 'BTC'))
 
@@ -63,8 +78,8 @@ async def run():
 
 	print("\nCreate limit order:")
 	try:
-		await client.create_limit_order(Pair("ETH", "BTC"), OrderSide.BUY, "1", "0", time_in_force = TimeInForce.GOOD_TILL_CANCELLED,
-	                                    new_order_response_type = OrderResponseType.FULL)
+		await client.create_limit_order(Pair("ETH", "BTC"), enums.OrderSide.BUY, "1", "0", time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED,
+	                                    new_order_response_type = enums.OrderResponseType.FULL)
 	except BinanceException as e:
 		print(e)
 
