@@ -4,6 +4,7 @@ class RestCallType(enum.Enum):
 	GET = enum.auto()
 	POST = enum.auto()
 	DELETE = enum.auto()
+	PUT = enum.auto()
 
 class OrderSide(enum.Enum):
 	BUY = "BUY"
@@ -55,9 +56,3 @@ class TimeInForce(enum.Enum):
 	IMMEDIATE_OR_CANCELLED = "IOC"
 	FILL_OR_KILL = "FOK"
 
-class TimeUnit(enum.Enum):
-	MINUTES = "MINUTES"
-	HOURS = "HOURS"
-	DAYS = "DAYS"
-	WEEKS = "WEEKS"
-	MONTHS = "MONTHS"

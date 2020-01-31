@@ -66,7 +66,7 @@ class BinanceClient(object):
 			"fromId": from_id
 		})
 
-		return await self._create_get("historicalTrades", params = params)
+		return await self._create_get("historicalTrades", params = params, headers = self._get_header_api_key())
 
 	async def get_aggregate_trades(self, pair : Pair, limit : int = None, from_id : int = None, start_tmstmp_ms : int = None, end_tmstmp_ms : int = None) -> dict:
 		params = BinanceClient._clean_request_params({
@@ -119,14 +119,6 @@ class BinanceClient(object):
 		})
 
 		return await self._create_get("ticker/bookTicker", headers = self._get_header_api_key(), params = params)
-
-	async def get_account(self, recv_window_ms : Optional[int] = None) -> dict:
-		params = BinanceClient._clean_request_params({
-			"recvWindow": recv_window_ms,
-			"timestamp": self._get_current_timestamp_ms()
-		})
-
-		return await self._create_get("account", headers = self._get_header_api_key(), params = params, signed = True)
 
 	async def create_order(self, pair : Pair, side : enums.OrderSide, type : enums.OrderType,
 	                             quantity : str,
@@ -192,7 +184,7 @@ class BinanceClient(object):
 
 		return await self._create_post("order/test", params = params, headers = self._get_header_api_key(), signed = True)
 
-	async def get_query_order(self, pair : Pair, order_id : int = None, orig_client_order_id : int = None, recv_window_ms : int = None) -> dict:
+	async def get_order(self, pair : Pair, order_id : int = None, orig_client_order_id : int = None, recv_window_ms : int = None) -> dict:
 		params = BinanceClient._clean_request_params({
 			"symbol": str(pair),
 			"orderId": order_id,
@@ -203,7 +195,7 @@ class BinanceClient(object):
 
 		return await self._create_get("order", params = params, headers = self._get_header_api_key(), signed = True)
 
-	async def delete_order(self, pair : Pair, order_id : str = None, orig_client_order_id : str = None,
+	async def cancel_order(self, pair : Pair, order_id : str = None, orig_client_order_id : str = None,
 	                       new_client_order_id : str = None, recv_window_ms : int = None) -> dict:
 		params = BinanceClient._clean_request_params({
 			"symbol": str(pair),
@@ -236,7 +228,108 @@ class BinanceClient(object):
 			"timestamp": self._get_current_timestamp_ms()
 		})
 
-		return await self._create_get("order", params = params, headers = self._get_header_api_key(), signed = True)
+		return await self._create_get("allOrders", params = params, headers = self._get_header_api_key(), signed = True)
+
+	async def create_oco_order(self, pair : Pair, side : enums.OrderSide,
+	                           quantity : str,
+	                           price: str,
+	                           stop_price: str,
+	                           limit_client_order_id: str = None,
+	                           list_client_order_id: str = None,
+	                           limit_iceberg_quantity: str = None,
+	                           stop_client_order_id: str = None,
+	                           stop_limit_price: str = None,
+	                           stop_iceberg_quantity: str = None,
+	                           stop_limit_time_in_force: enums.TimeInForce = None,
+	                           new_order_response_type : enums.OrderResponseType = None,
+	                           recv_window_ms : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": str(pair),
+			"side": side.value,
+			"quantity": quantity,
+			"listClientOrderId": list_client_order_id,
+			"limitClientOrderId": limit_client_order_id,
+			"price": price,
+			"stopClientOrderId": stop_client_order_id,
+			"stopPrice": stop_price,
+			"stopLimitPrice": stop_limit_price,
+			"stopIcebergQty": stop_iceberg_quantity,
+			"limitIcebergQty": limit_iceberg_quantity,
+			"recvWindow": recv_window_ms,
+			"timestamp": self._get_current_timestamp_ms()
+		})
+
+		if stop_limit_time_in_force:
+			params['stopLimitTimeInForce'] = stop_limit_time_in_force.value
+
+		if new_order_response_type:
+			params['newOrderRespType'] = new_order_response_type.value
+
+		return await self._create_post("order/oco", params = params, headers = self._get_header_api_key(), signed = True)
+
+	async def cancel_oco_order(self, pair : Pair, order_list_id : str = None, list_client_order_id : str = None,
+	                       new_client_order_id : str = None, recv_window_ms : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": str(pair),
+			"orderListId": order_list_id,
+			"listClientOrderId": list_client_order_id,
+			"newClientOrderId": new_client_order_id,
+			"recvWindow": recv_window_ms,
+			"timestamp": self._get_current_timestamp_ms()
+		})
+
+		return await self._create_delete("orderList", params = params, headers = self._get_header_api_key(), signed = True)
+
+	async def get_oco_order(self, order_list_id : int = None, orig_client_order_id : int = None, recv_window_ms : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"orderListId": order_list_id,
+			"origClientOrderId": orig_client_order_id,
+			"recvWindow": recv_window_ms,
+			"timestamp": self._get_current_timestamp_ms()
+		})
+
+		return await self._create_get("orderList", params = params, headers = self._get_header_api_key(), signed = True)
+
+	async def get_all_oco_orders(self, from_id : int = None, limit : int = None, start_tmstmp_ms : int = None, end_tmstmp_ms : int = None, recv_window_ms : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"fromId": from_id,
+			"startTime": start_tmstmp_ms,
+			"endTime": end_tmstmp_ms,
+			"limit": limit,
+			"recvWindow": recv_window_ms,
+			"timestamp": self._get_current_timestamp_ms()
+		})
+
+		return await self._create_get("allOrderList", params = params, headers = self._get_header_api_key(), signed = True)
+
+	async def get_open_oco_orders(self, recv_window_ms : int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"recvWindow": recv_window_ms,
+			"timestamp": self._get_current_timestamp_ms()
+		})
+
+		return await self._create_get("openOrderList", params = params, headers = self._get_header_api_key(), signed = True)
+
+	async def get_account(self, recv_window_ms: Optional[int] = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"recvWindow": recv_window_ms,
+			"timestamp": self._get_current_timestamp_ms()
+		})
+
+		return await self._create_get("account", headers = self._get_header_api_key(), params = params, signed = True)
+
+	async def get_account_trades(self, pair: Pair, limit: int = None, from_id: int = None,
+	                               start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+		params = BinanceClient._clean_request_params({
+			"symbol": pair,
+			"limit": limit,
+			"fromId": from_id,
+			"startTime": start_tmstmp_ms,
+			"endTime": end_tmstmp_ms,
+			"timestamp": self._get_current_timestamp_ms()
+		})
+
+		return await self._create_get("myTrades", params = params, headers = self._get_header_api_key(), signed = True)
 
 	async def get_listen_key(self):
 		return await self._create_post("userDataStream", headers = self._get_header_api_key())
@@ -276,6 +369,9 @@ class BinanceClient(object):
 	async def _create_delete(self, resource : str, params : dict = None, headers : dict = None, signed : bool = False) -> dict:
 		return await self._create_rest_call(enums.RestCallType.DELETE, resource, None, params, headers, signed)
 
+	async def _create_put(self, resource : str, params : dict = None, headers : dict = None, signed : bool = False) -> dict:
+		return await self._create_rest_call(enums.RestCallType.PUT, resource, None, params, headers, signed)
+
 	async def _create_rest_call(self, rest_call_type : enums.RestCallType, resource : str, data : dict = None, params : dict = None, headers : dict = None, signed : bool = False) -> dict:
 		with Timer('RestCall'):
 			# add signature into parameters
@@ -289,6 +385,8 @@ class BinanceClient(object):
 				rest_call = self._get_rest_session().post(BinanceClient.REST_API_URI + resource, json = data, params = params, headers = headers, ssl = self.ssl_context)
 			elif rest_call_type == enums.RestCallType.DELETE:
 				rest_call = self._get_rest_session().delete(BinanceClient.REST_API_URI + resource, json = data, params = params, headers = headers, ssl = self.ssl_context)
+			elif rest_call_type == enums.RestCallType.PUT:
+				rest_call = self._get_rest_session().put(BinanceClient.REST_API_URI + resource, json = data, params = params, headers = headers, ssl = self.ssl_context)
 			else:
 				raise Exception(f"Unsupported REST call type {rest_call_type}.")
 

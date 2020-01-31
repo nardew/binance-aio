@@ -56,38 +56,98 @@ async def run():
 	await client.get_exchange_info()
 
 	print("\nOrder book:")
-	await client.get_orderbook(pair = Pair('ETH', 'BTC'), limit = enums.DepthLimit.LIMIT_5)
+	await client.get_orderbook(pair = Pair('ETH', 'BTC'), limit = enums.DepthLimit.L_5)
 
 	print("\nTrades:")
-	await client.get_trades(pair=Pair('ETH', 'BTC'), limit = 10)
+	await client.get_trades(pair=Pair('ETH', 'BTC'), limit = 5)
 
 	print("\nHistorical trades:")
-	await client.get_historical_trades(pair=Pair('ETH', 'BTC'), limit = 10)
+	await client.get_historical_trades(pair=Pair('ETH', 'BTC'), limit = 5)
 
 	print("\nAggregate trades:")
-	await client.get_aggregate_trades(pair=Pair('ETH', 'BTC'), limit = 10)
+	await client.get_aggregate_trades(pair=Pair('ETH', 'BTC'), limit = 5)
 
 	print("\nCandelsticks:")
-	await client.get_candelsticks(pair=Pair('ETH', 'BTC'), interval = enums.CandelstickInterval.I_1D, limit=10)
+	await client.get_candelsticks(pair=Pair('ETH', 'BTC'), interval = enums.CandelstickInterval.I_1D, limit=5)
+
+	print("\nAverage price:")
+	await client.get_average_price(pair = Pair('ETH', 'BTC'))
+
+	print("\n24hour price ticker:")
+	await client.get_24h_price_ticker(pair = Pair('ETH', 'BTC'))
+
+	print("\nProce ticker:")
+	await client.get_price_ticker(pair = Pair('ETH', 'BTC'))
 
 	print("\nBest order book ticker:")
 	await client.get_best_orderbook_ticker(pair = Pair('ETH', 'BTC'))
 
-	print("\nAccount:")
-	await client.get_account(recv_window_ms = 5000)
+	print("\nCreate test market order:")
+	await client.create_test_order(Pair("ETH", "BTC"), side = enums.OrderSide.BUY, type = enums.OrderType.MARKET,
+	                          quantity = "1",
+	                          new_order_response_type = enums.OrderResponseType.FULL)
 
 	print("\nCreate limit order:")
 	try:
-		await client.create_limit_order(Pair("ETH", "BTC"), enums.OrderSide.BUY, "1", "0", time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED,
-	                                    new_order_response_type = enums.OrderResponseType.FULL)
+		await client.create_order(Pair("ETH", "BTC"), side = enums.OrderSide.BUY, type = enums.OrderType.LIMIT,
+		                          quantity = "1",
+		                          price = "0",
+		                          time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED,
+		                          new_order_response_type = enums.OrderResponseType.FULL)
 	except BinanceException as e:
 		print(e)
 
-	print("\nDelete order:")
+	print("\nCancel order:")
 	try:
-		await client.delete_order(pair = Pair('ETH', 'BTC'), order_id = "1")
+		await client.cancel_order(pair = Pair('ETH', 'BTC'), order_id = "1")
 	except BinanceException as e:
 		print(e)
+
+	print("\nGet order:")
+	try:
+		await client.get_order(pair = Pair('ETH', 'BTC'), order_id = 1)
+	except BinanceException as e:
+		print(e)
+
+	print("\nGet open orders:")
+	await client.get_open_orders(pair = Pair('ETH', 'BTC'))
+
+	print("\nGet all orders:")
+	await client.get_all_orders(pair = Pair('ETH', 'BTC'))
+
+	print("\nCreate OCO order:")
+	try:
+		await client.create_oco_order(Pair("ETH", "BTC"), side = enums.OrderSide.BUY,
+		                          quantity = "1",
+		                          price = "0",
+		                          stop_price = "0",
+		                          new_order_response_type = enums.OrderResponseType.FULL)
+	except BinanceException as e:
+		print(e)
+
+	print("\nCancel OCO order:")
+	try:
+		await client.cancel_oco_order(pair = Pair('ETH', 'BTC'), order_list_id = "1")
+	except BinanceException as e:
+		print(e)
+
+	print("\nGet OCO order:")
+	try:
+		await client.get_oco_order(order_list_id = 1)
+	except BinanceException as e:
+		print(e)
+
+	print("\nGet open OCO orders:")
+	await client.get_open_oco_orders()
+
+	print("\nGet all OCO orders:")
+	await client.get_all_oco_orders()
+
+	print("\nAccount:")
+	await client.get_account(recv_window_ms = 5000)
+
+	print("\nAccount trades:")
+	await client.get_account_trades(pair = Pair('ETH', 'BTC'))
 
 	# Websockets
 	print("\nWEBSOCKETS\n")
@@ -108,7 +168,7 @@ async def run():
 	])
 
 	# Execute all websockets asynchronously
-	await client.start_subscriptions()
+	#await client.start_subscriptions()
 
 	await client.close()
 
