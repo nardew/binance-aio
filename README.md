@@ -1,4 +1,4 @@
-# binance-aio
+# binance-aio 0.0.1
 
 [![](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-365/) [![](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-374/)
 
@@ -198,3 +198,7 @@ If you feel you want to get in touch, then please
 
 - preferably use Github Issues, or
 - send an e-mail to <img src="http://safemail.justlikeed.net/e/160b5d5ea6878dd3d893b9f9fecb6ed7.png" border="0" align="absbottom">
+
+### Affiliation
+
+In case you are interested in asynchronous clients for other exchanges, pay a visit to my other libraries [bitpanda-aio](https://github.com/nardew/bitpanda-aio) or [bitforex-aio](https://github.com/nardew/bitforex-aio). In case you are interested in an automated trading bot, check out [creten](https://github.com/nardew/creten).
