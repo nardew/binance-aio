@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
 	name="binance-aio",
-	version="0.0.1",
+	version="0.0.2",
 	author="nardew",
 	author_email="binance.aio@gmail.com",
 	description="Binance asynchronous python client",

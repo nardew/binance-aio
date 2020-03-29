@@ -1,4 +1,8 @@
-# binance-aio 0.0.1
+# binance-aio 0.0.2
+
+**Announcement:**`binance-aio` has been replaced by a new library [`cryptolib-aio`](https://github.com/nardew/cryptolib-aio). `cryptolib-aio` offers the very same functionality as `binance-aio` but on top it provides access to multiple cryptoexchanges and other (mostly technical) new features. You can keep using `binance-aio` but please note no new features/bugfixes will be implemented. We recommend to migrate to `cryptolib-aio`.
+
+----
 
 [![](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-365/) [![](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-374/)
 
@@ -201,4 +205,4 @@ If you feel you want to get in touch, then please
 
 ### Affiliation
 
-In case you are interested in asynchronous clients for other exchanges, pay a visit to my other libraries [bitpanda-aio](https://github.com/nardew/bitpanda-aio) or [bitforex-aio](https://github.com/nardew/bitforex-aio). In case you are interested in an automated trading bot, check out [creten](https://github.com/nardew/creten).
+In case you are interested in an automated trading bot, check out our other project [creten](https://github.com/nardew/creten).
